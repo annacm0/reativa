@@ -1,0 +1,47 @@
+/* Importa todo o Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────
+   Design Tokens — cores, fontes e espaçamentos do Reativa
+   Define variáveis CSS que serão usadas em todo o projeto
+   ────────────────────────────────────────────────────────── */
+@theme {
+  /* Paleta principal — tom verde-azulado (teal) */
+  --color-primary-50: #f0fdfa;
+  --color-primary-100: #ccfbf1;
+  --color-primary-200: #99f6e4;
+  --color-primary-300: #5eead4;
+  --color-primary-400: #2dd4bf;
+  --color-primary-500: #14b8a6;
+  --color-primary-600: #0d9488;
+  --color-primary-700: #0f766e;
+  --color-primary-800: #115e59;
+  --color-primary-900: #134e4a;
+
+  /* Paleta de cinza para UI */
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+
+  /* Cores de status */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Tipografia */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Bordas */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}

@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    // ── Qual versão de JS gerar ──────────────────────────────────
+    "target": "ES2020",           // JavaScript moderno (suportado pelo Node 20)
+    "module": "CommonJS",          // Sistema de módulos do Node.js
+    "lib": ["ES2020"],            // APIs disponíveis (Promise, Map, etc.)
+
+    // ── Onde os arquivos ficam ───────────────────────────────────
+    "rootDir": "./src",            // Código-fonte fica em /src
+    "outDir": "./dist",            // Código compilado vai para /dist
+
+    // ── Qualidade e segurança ────────────────────────────────────
+    "strict": true,                // Modo estrito: força boas práticas
+    "noImplicitAny": true,         // Proíbe variáveis sem tipo explícito
+    "strictNullChecks": true,      // Força tratar valores null/undefined
+    "noUnusedLocals": true,        // Alerta sobre variáveis não usadas
+    "noUnusedParameters": true,    // Alerta sobre parâmetros não usados
+    "noImplicitReturns": true,     // Toda função deve retornar algo
+
+    // ── Interoperabilidade ───────────────────────────────────────
+    "esModuleInterop": true,       // Permite importar módulos CommonJS com 'import'
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,     // Permite importar arquivos .json
+
+    // ── Source maps (para debug) ─────────────────────────────────
+    "sourceMap": true,             // Permite debugar o código TypeScript original
+
+    // ── Paths ───────────────────────────────────────────────────
+    "paths": {
+      "@/*": ["./src/*"]          // Atalho: '@/config/env' → 'src/config/env'
+    },
+
+    // ── Decorators (para compatibilidade futura) ─────────────────
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // ── Tipagem do Node.js ───────────────────────────────────────
+    "types": ["node"]
+  },
+  "include": ["src/**/*"],         // Compilar apenas arquivos em /src
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/config/prisma.ts"]
+}
