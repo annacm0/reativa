@@ -1,0 +1,213 @@
+// Prisma Schema — Reativa SaaS
+// Este arquivo define:
+//   1. Como o Prisma se conecta ao banco (datasource)
+//   2. Quais tipos TypeScript serão gerados (generator)
+//   3. A estrutura de todas as tabelas e seus relacionamentos (models)
+
+// ──────────────────────────────────────────────────────────────
+// CONFIGURAÇÃO DO GERADOR
+// Gera o Prisma Client em node_modules/@prisma/client
+// ──────────────────────────────────────────────────────────────
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ──────────────────────────────────────────────────────────────
+// CONFIGURAÇÃO DO BANCO DE DADOS
+// No Prisma 7, a URL de conexão vai em prisma.config.ts (não aqui)
+// ──────────────────────────────────────────────────────────────
+datasource db {
+  provider = "postgresql"
+}
+
+// ──────────────────────────────────────────────────────────────
+// ENUM: Papel do usuário dentro da empresa
+// ──────────────────────────────────────────────────────────────
+enum UserRole {
+  ADMIN  // Pode fazer tudo: criar/editar/excluir usuários, serviços, etc.
+  MEMBER // Pode operar: cadastrar clientes, registrar atendimentos
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODEL: Company (Empresa / Tenant)
+//
+// É o "root" do multi-tenancy. Toda entidade de dados pertence
+// a uma empresa. A separação de dados começa aqui.
+// ──────────────────────────────────────────────────────────────
+model Company {
+  id        String   @id @default(uuid()) // UUID gerado automaticamente
+  name      String                        // Nome do estabelecimento
+
+  createdAt DateTime @default(now())      // Preenchido automaticamente na criação
+  updatedAt DateTime @updatedAt           // Atualizado automaticamente em cada save
+
+  // Relacionamentos: uma empresa possui muitos de cada entidade
+  users        User[]
+  clients      Client[]
+  services     Service[]
+  appointments Appointment[]
+
+  @@map("companies") // Nome da tabela no banco (snake_case por convenção)
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODEL: User (Usuário do sistema)
+//
+// Pertence a uma empresa. O email é globalmente único
+// (não pode existir o mesmo email em duas empresas diferentes).
+// ──────────────────────────────────────────────────────────────
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique             // Único em todo o banco
+  password  String                       // Sempre armazenado como hash bcrypt
+  role      UserRole @default(MEMBER)
+
+  // Chave estrangeira: a qual empresa este usuário pertence
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Índice: buscas por email são frequentes (login)
+  @@index([email])
+  // Índice: buscar usuários de uma empresa específica
+  @@index([companyId])
+
+  @@map("users")
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODEL: Client (Cliente do estabelecimento)
+//
+// Multi-tenancy: sempre filtrado por companyId.
+// Um cliente pode ter vários pets.
+// ──────────────────────────────────────────────────────────────
+model Client {
+  id    String  @id @default(uuid())
+  name  String
+  phone String                          // Validado e normalizado no backend
+  email String? @map("email")           // Opcional (? = nullable)
+
+  // Multi-tenancy: a qual empresa este cliente pertence
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  pets Pet[]
+
+  // Índice: buscar clientes de uma empresa (uso mais frequente)
+  @@index([companyId])
+  // Índice: busca por nome dentro de uma empresa
+  @@index([companyId, name])
+
+  @@map("clients")
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODEL: Pet
+//
+// Um pet pertence a um cliente.
+// Indiretamente pertence a uma empresa (via cliente).
+// ──────────────────────────────────────────────────────────────
+model Pet {
+  id        String    @id @default(uuid())
+  name      String
+  species   String                         // Ex: "Cão", "Gato", "Ave"
+  breed     String?                        // Opcional: "Labrador", "Persa"
+  birthDate DateTime?                      // Opcional: data de nascimento
+  notes     String?                        // Observações gerais (texto livre)
+
+  // Chave estrangeira: a qual cliente este pet pertence
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos: um pet pode ter vários atendimentos
+  appointments Appointment[]
+
+  // Índice: buscar pets de um cliente específico
+  @@index([clientId])
+
+  @@map("pets")
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODEL: Service (Serviço oferecido pela empresa)
+//
+// Ex: Banho (30 dias de intervalo), Tosa (45 dias de intervalo)
+// O returnIntervalDays é a chave do motor de recuperação.
+// ──────────────────────────────────────────────────────────────
+model Service {
+  id                String @id @default(uuid())
+  name              String                       // Ex: "Banho", "Tosa", "Consulta"
+  durationMinutes   Int                          // Duração aproximada em minutos
+  returnIntervalDays Int                         // Intervalo esperado de retorno em dias
+                                                 // Ex: Banho = 30, Tosa = 45
+
+  // Multi-tenancy: a qual empresa este serviço pertence
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  appointments Appointment[]
+
+  // Índice: buscar serviços de uma empresa
+  @@index([companyId])
+  // Constraint: um mesmo serviço não pode ter o mesmo nome na mesma empresa
+  @@unique([companyId, name])
+
+  @@map("services")
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODEL: Appointment (Atendimento / Visita)
+//
+// Registra que um pet recebeu um serviço em uma data.
+// É a base de todo o motor de recuperação:
+//   dataRetorno = date + service.returnIntervalDays
+//
+// Multi-tenancy: companyId aqui permite filtrar atendimentos
+// diretamente sem precisar de JOINs com Pet/Client.
+// ──────────────────────────────────────────────────────────────
+model Appointment {
+  id    String   @id @default(uuid())
+  date  DateTime                      // Data em que o atendimento ocorreu
+  notes String?                       // Observações do atendimento (opcional)
+
+  // Chave estrangeira: qual pet foi atendido
+  petId String
+  pet   Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  // Chave estrangeira: qual serviço foi realizado
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  // onDelete: Restrict — não permite excluir um serviço que tem atendimentos registrados
+
+  // Multi-tenancy: denormalizado para queries diretas sem JOIN
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Índice: buscar atendimentos de uma empresa (mais frequente)
+  @@index([companyId])
+  // Índice: buscar atendimentos de um pet (para o motor de recuperação)
+  @@index([petId])
+  // Índice composto: encontrar o último atendimento de um pet por serviço
+  @@index([petId, serviceId])
+  // Índice: filtrar por data (relatórios, dashboard)
+  @@index([companyId, date])
+
+  @@map("appointments")
+}

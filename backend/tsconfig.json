@@ -37,6 +37,6 @@
     // ── Tipagem do Node.js ───────────────────────────────────────
     "types": ["node"]
   },
-  "include": ["src/**/*"],         // Compilar apenas arquivos em /src
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/config/prisma.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

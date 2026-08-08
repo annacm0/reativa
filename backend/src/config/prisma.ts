@@ -1,24 +1,31 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { env } from './env';
 
-// Padrão Singleton: garante que só existe um PrismaClient em toda a aplicação.
-// Isso evita o problema de "Too many connections" com o banco de dados.
+// No Prisma 7, a conexão é feita via adapter (não mais pela url no schema).
+// O PrismaPg cria um pool de conexões com o PostgreSQL.
 
-// Em desenvolvimento com hot-reload, o módulo pode ser recarregado várias vezes.
-// Guardamos a instância no objeto global do Node para sobreviver ao reload.
+// Padrão Singleton: garante que só existe um PrismaClient em toda a aplicação.
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    // Em desenvolvimento, loga as queries para facilitar o debug.
-    // Em produção, não loga nada (evita expor dados sensíveis nos logs).
-    log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+function createPrismaClient(): PrismaClient {
+  const adapter = new PrismaPg({
+    connectionString: env.DATABASE_URL,
   });
 
-// Preserva a instância no escopo global apenas em desenvolvimento
+  return new PrismaClient({
+    adapter,
+    // Em desenvolvimento, loga as queries para facilitar o debug.
+    // Em produção, apenas erros (nunca expõe dados sensíveis em logs).
+    log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+
+// Preserva a instância no escopo global apenas em desenvolvimento (hot-reload)
 if (env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 }
