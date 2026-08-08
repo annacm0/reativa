@@ -3,14 +3,14 @@ import path from 'node:path';
 import { defineConfig, env } from 'prisma/config';
 
 // No Prisma 7, a URL de conexão é definida aqui, não no schema.prisma.
-// O dotenv/config carrega automaticamente o .env do diretório de trabalho (backend/).
+// Este arquivo deve ficar na raiz do backend/ para ser encontrado automaticamente.
+// O dotenv/config carrega o .env do diretório atual (backend/.env).
 
 export default defineConfig({
   earlyAccess: true,
-  schema: path.resolve(__dirname, 'schema.prisma'),
+  schema: path.resolve(__dirname, 'prisma/schema.prisma'),
 
   // URL de conexão com o banco de dados
-  // env() lê de process.env — carregado pelo dotenv/config acima
   datasource: {
     url: env('DATABASE_URL'),
   },

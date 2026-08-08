@@ -1,0 +1,35 @@
+# docker-compose.yml — Infraestrutura local de desenvolvimento do Reativa
+#
+# Como usar (Docker Desktop moderno — sem hífen):
+#   Subir:   docker compose up -d
+#   Parar:   docker compose stop
+#   Remover: docker compose down
+#   Logs:    docker compose logs -f db
+
+services:
+  db:
+    image: postgres:16-alpine  # Alpine = imagem menor e mais rápida (~50MB)
+    container_name: reativa-db
+    restart: unless-stopped    # Reinicia automaticamente se o Docker reiniciar
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reativa_dev
+
+    ports:
+      - '5432:5432'  # Porta local:porta do container
+
+    volumes:
+      - reativa_db_data:/var/lib/postgresql/data  # Persiste dados entre restarts
+
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# Volume nomeado: os dados do banco ficam aqui mesmo após parar o container
+volumes:
+  reativa_db_data:
+    name: reativa_db_data
