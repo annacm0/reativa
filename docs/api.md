@@ -67,6 +67,16 @@ Lista todos os clientes da empresa autenticada.
 ### POST /clients
 Cria um novo cliente.
 
+**Body:**
+```json
+{
+  "name": "Ana Silva",
+  "phone": "11999999999",
+  "email": "ana@email.com",
+  "notes": "Observações livres sobre o cliente (opcional)"
+}
+```
+
 ### GET /clients/:id
 Retorna um cliente pelo ID.
 
@@ -75,25 +85,6 @@ Atualiza um cliente.
 
 ### DELETE /clients/:id
 Remove um cliente.
-
----
-
-## Pets
-
-### GET /pets
-Lista todos os pets da empresa autenticada.
-
-### POST /pets
-Cria um novo pet vinculado a um cliente.
-
-### GET /pets/:id
-Retorna um pet pelo ID.
-
-### PUT /pets/:id
-Atualiza um pet.
-
-### DELETE /pets/:id
-Remove um pet.
 
 ---
 
@@ -135,13 +126,22 @@ Retorna a lista de clientes classificados por status de retorno.
 ```json
 [
   {
-    "pet": { "id": "uuid", "name": "Mel", "species": "Cão" },
     "client": { "id": "uuid", "name": "Ana Silva", "phone": "11999999999" },
-    "service": { "name": "Banho", "returnIntervalDays": 30 },
+    "service": { "name": "Corte de Cabelo", "returnIntervalDays": 30 },
     "lastAppointmentDate": "2026-07-10T00:00:00.000Z",
     "expectedReturnDate": "2026-08-09T00:00:00.000Z",
     "daysUntilReturn": 1,
-    "status": "PROXIMO"
+    "status": "PROXIMO",
+    "whatsappLink": "https://wa.me/5511999999999?text=Ol%C3%A1%2C+Ana..."
+  },
+  {
+    "client": { "id": "uuid", "name": "Carlos Souza", "phone": "11988888888" },
+    "service": { "name": "Troca de Óleo", "returnIntervalDays": 90 },
+    "lastAppointmentDate": "2026-05-10T00:00:00.000Z",
+    "expectedReturnDate": "2026-08-08T00:00:00.000Z",
+    "daysUntilReturn": -5,
+    "status": "ATRASADO",
+    "whatsappLink": "https://wa.me/5511988888888?text=Ol%C3%A1%2C+Carlos..."
   }
 ]
 ```

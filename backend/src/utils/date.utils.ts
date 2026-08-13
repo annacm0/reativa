@@ -13,10 +13,12 @@ const PROXIMATE_WINDOW_DAYS = 7;
 /**
  * Calcula a data prevista de retorno.
  *
- * Exemplo:
- *   Último banho: 10/07/2026
+ * Exemplo (salão de beleza):
+ *   Último corte: 10/07/2026
  *   Intervalo: 30 dias
  *   Retorno previsto: 09/08/2026
+ *
+ * Funciona para qualquer segmento: pet shop, clínica, oficina, etc.
  */
 export function calculateExpectedReturnDate(
   lastAppointmentDate: Date,
@@ -48,7 +50,7 @@ export function calculateDaysUntilReturn(expectedReturnDate: Date): number {
 }
 
 /**
- * Classifica o status de retorno de um cliente/pet.
+ * Classifica o status de retorno de um cliente.
  *
  * Regras:
  *   NORMAL   → mais de 7 dias para o retorno previsto
