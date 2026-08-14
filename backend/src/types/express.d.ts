@@ -1,14 +1,15 @@
-// Este arquivo estende os tipos do Express para incluir o campo 'user'
-// que é injetado pelo middleware de autenticação.
+// Estende os tipos do Express para incluir o campo 'user' em req.
+// Preenchido pelo middleware authenticate após verificar o JWT.
 //
-// Após o middleware de auth processar o token JWT, qualquer controller
-// pode acessar req.user.userId e req.user.companyId com segurança de tipos.
+// Em todo controller protegido, req.user estará disponível com segurança de tipos.
+// REGRA: req.user.companyId e req.user.role vêm do token — nunca do body/params.
 
 declare namespace Express {
   interface Request {
     user?: {
       userId: string;
-      companyId: string;
+      companyId: string; // sempre da empresa autenticada, nunca do frontend
+      role: 'ADMIN' | 'MEMBER';
     };
   }
 }
