@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authRoutes } from '../modules/auth/auth.routes';
 import { clientRoutes } from '../modules/clients/client.routes';
+import { serviceRoutes } from '../modules/services/service.routes';
 import { authenticate } from '../middlewares/authenticate.middleware';
 
 // Roteador raiz — prefixo /api definido em server.ts
@@ -25,9 +26,9 @@ router.use('/auth', authRoutes);
 // authenticate é aplicado aqui, uma vez, para todos os módulos abaixo.
 // Nenhum controller precisa verificar o token — já foi validado.
 router.use('/clients', authenticate, clientRoutes);
+router.use('/services', authenticate, serviceRoutes);
 
 // ── Próximos módulos (adicionados nas ETAPAs seguintes) ──────
-// router.use('/services',     authenticate, serviceRoutes);
 // router.use('/appointments', authenticate, appointmentRoutes);
 // router.use('/retention',    authenticate, retentionRoutes);
 

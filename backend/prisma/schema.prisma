@@ -127,7 +127,7 @@ model Client {
 model Service {
   id                 String @id @default(uuid())
   name               String
-  durationMinutes    Int    // Duração aproximada em minutos
+  durationMinutes    Int?   // Duração aproximada em minutos — opcional (nem todo segmento usa)
   returnIntervalDays Int    // Intervalo esperado de retorno em dias
 
   companyId String
