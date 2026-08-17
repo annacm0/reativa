@@ -3,12 +3,9 @@
 // Estas funções implementam as regras de negócio centrais:
 // "Quando um cliente deve retornar? Já passou do prazo?"
 
-export type ReturnStatus = 'NORMAL' | 'PROXIMO' | 'ATRASADO';
+import { RETURN_WINDOW_DAYS } from '../config/retention.config';
 
-// Janela (em dias) que define o período "PRÓXIMO" antes e depois da data prevista.
-// Ex: se o retorno era esperado para dia 10, clientes entre dia 3 e dia 17
-// são classificados como PRÓXIMO (janela de 7 dias para cada lado).
-const PROXIMATE_WINDOW_DAYS = 7;
+export type ReturnStatus = 'NORMAL' | 'PROXIMO' | 'ATRASADO';
 
 /**
  * Calcula a data prevista de retorno.
@@ -34,7 +31,7 @@ export function calculateExpectedReturnDate(
  *
  * Valor positivo = falta N dias para o retorno
  * Valor negativo = o retorno estava previsto há N dias (atrasado)
- * Zero = o retorno é hoje
+ * Zero           = o retorno é hoje
  */
 export function calculateDaysUntilReturn(expectedReturnDate: Date): number {
   const today = new Date();
@@ -52,30 +49,36 @@ export function calculateDaysUntilReturn(expectedReturnDate: Date): number {
 /**
  * Classifica o status de retorno de um cliente.
  *
- * Regras:
- *   NORMAL   → mais de 7 dias para o retorno previsto
- *   PROXIMO  → entre -7 e +7 dias do retorno previsto (inclusive)
- *   ATRASADO → mais de 7 dias além do retorno previsto
+ * Regras (com windowDays = 7 como padrão do MVP):
+ *   ATRASADO → daysUntilReturn < 0             (data prevista já passou)
+ *   PROXIMO  → 0 <= daysUntilReturn <= windowDays (de hoje até X dias)
+ *   NORMAL   → daysUntilReturn > windowDays    (mais de X dias para o retorno)
+ *
+ * @param daysUntilReturn - Dias até o retorno previsto (negativo = atrasado)
+ * @param windowDays      - Janela de PROXIMO em dias (padrão: RETURN_WINDOW_DAYS)
+ *                          Futuramente virá da configuração por empresa.
  */
-export function classifyReturnStatus(daysUntilReturn: number): ReturnStatus {
-  if (daysUntilReturn > PROXIMATE_WINDOW_DAYS) {
-    return 'NORMAL';
-  }
-
-  if (daysUntilReturn >= -PROXIMATE_WINDOW_DAYS) {
-    return 'PROXIMO';
-  }
-
-  return 'ATRASADO';
+export function classifyReturnStatus(
+  daysUntilReturn: number,
+  windowDays: number = RETURN_WINDOW_DAYS
+): ReturnStatus {
+  if (daysUntilReturn < 0) return 'ATRASADO';           // já passou a data prevista
+  if (daysUntilReturn <= windowDays) return 'PROXIMO';  // de hoje até X dias
+  return 'NORMAL';                                       // mais de X dias
 }
 
 /**
- * Função principal: dado o último atendimento e o intervalo do serviço,
- * retorna todas as informações de retorno calculadas.
+ * Função principal: dado o último atendimento, o intervalo do serviço
+ * e a janela de PROXIMO, retorna todas as informações de retorno calculadas.
+ *
+ * @param lastAppointmentDate - Data do último atendimento
+ * @param returnIntervalDays  - Intervalo esperado de retorno (em dias)
+ * @param windowDays          - Janela de PROXIMO (padrão: RETURN_WINDOW_DAYS)
  */
 export function calculateReturnInfo(
   lastAppointmentDate: Date,
-  returnIntervalDays: number
+  returnIntervalDays: number,
+  windowDays: number = RETURN_WINDOW_DAYS
 ): {
   expectedReturnDate: Date;
   daysUntilReturn: number;
@@ -86,7 +89,7 @@ export function calculateReturnInfo(
     returnIntervalDays
   );
   const daysUntilReturn = calculateDaysUntilReturn(expectedReturnDate);
-  const status = classifyReturnStatus(daysUntilReturn);
+  const status = classifyReturnStatus(daysUntilReturn, windowDays);
 
   return { expectedReturnDate, daysUntilReturn, status };
 }

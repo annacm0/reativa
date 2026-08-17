@@ -3,6 +3,7 @@ import { authRoutes } from '../modules/auth/auth.routes';
 import { clientRoutes } from '../modules/clients/client.routes';
 import { serviceRoutes } from '../modules/services/service.routes';
 import { appointmentRoutes } from '../modules/appointments/appointment.routes';
+import { retentionRoutes } from '../modules/retention/retention.routes';
 import { authenticate } from '../middlewares/authenticate.middleware';
 
 // Roteador raiz — prefixo /api definido em server.ts
@@ -28,9 +29,7 @@ router.use('/auth', authRoutes);
 router.use('/clients',      authenticate, clientRoutes);
 router.use('/services',     authenticate, serviceRoutes);
 router.use('/appointments', authenticate, appointmentRoutes);
-
-// ── Próximos módulos (adicionados nas ETAPAs seguintes) ──────
-// router.use('/retention', authenticate, retentionRoutes);
+router.use('/retention',    authenticate, retentionRoutes);
 
 export { router };
 
