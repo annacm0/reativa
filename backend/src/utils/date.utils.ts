@@ -47,6 +47,46 @@ export function calculateDaysUntilReturn(expectedReturnDate: Date): number {
 }
 
 /**
+ * Verifica se uma data é estritamente futura em relação ao dia atual.
+ *
+ * Ambas as datas são normalizadas para meia-noite (setHours(0,0,0,0))
+ * antes da comparação, eliminando qualquer dependência de horário ou
+ * timezone do servidor. A comparação é puramente entre dias.
+ *
+ * Exemplos:
+ *   hoje         → false (não é futuro)
+ *   ontem        → false
+ *   amanhã       → true
+ *   23:59 de hoje → false (mesmo dia, mesmo que instante seja "futuro")
+ *
+ * Usada pelo schema de Appointment para garantir que a data representa
+ * um atendimento já realizado, sem falso-positivo por timezone.
+ */
+export function isFutureDate(date: Date | string): boolean {
+  // Calcula a string "YYYYMMDD" de hoje, sem dependência de timezone
+  const now = new Date();
+  const todayStr =
+    String(now.getFullYear()) +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0');
+
+  if (typeof date === 'string') {
+    // String "YYYY-MM-DD": remove hífens e compara lexicograficamente.
+    // "20260818" > "20260817" → futuro. Sem conversão de timezone.
+    const dateStr = date.replace(/-/g, '');
+    return dateStr > todayStr;
+  }
+
+  // Date: extrai ano/mês/dia locais (mesma lógica, sem UTC)
+  const dateStr =
+    String(date.getFullYear()) +
+    String(date.getMonth() + 1).padStart(2, '0') +
+    String(date.getDate()).padStart(2, '0');
+
+  return dateStr > todayStr;
+}
+
+/**
  * Classifica o status de retorno de um cliente.
  *
  * Regras (com windowDays = 7 como padrão do MVP):
