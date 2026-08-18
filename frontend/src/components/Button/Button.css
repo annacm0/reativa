@@ -1,0 +1,149 @@
+/*
+  Button.css — Estilos do componente Button
+  Todas as cores e tamanhos usam tokens de variables.css.
+*/
+
+/* ── BASE ─────────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  line-height: 1;
+  border-radius: var(--radius-md);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+  /* Evita seleção acidental de texto ao clicar rapidamente */
+  user-select: none;
+}
+
+/* ── TAMANHOS ─────────────────────────────────────────────────────────────── */
+.btn--sm {
+  height: var(--btn-height-sm);
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+  border-radius: var(--radius-sm);
+}
+
+.btn--md {
+  height: var(--btn-height-md);
+}
+
+.btn--lg {
+  height: var(--btn-height-lg);
+  padding: 0 var(--space-6);
+  font-size: var(--text-base);
+}
+
+/* ── VARIANTE: PRIMARY ────────────────────────────────────────────────────── */
+/* CTA principal — entrar, salvar, confirmar */
+.btn--primary {
+  background-color: var(--color-brand-teal);
+  color: var(--color-text-on-brand);
+  border-color: var(--color-brand-teal);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background-color: var(--color-brand-teal-hv);
+  border-color: var(--color-brand-teal-hv);
+}
+
+.btn--primary:active:not(:disabled) {
+  background-color: #17a0ab;
+}
+
+/* ── VARIANTE: SECONDARY ──────────────────────────────────────────────────── */
+/* Ação secundária — cancelar, voltar, alternativas */
+.btn--secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background-color: var(--color-surface-2);
+  border-color: #c8d4e0;
+}
+
+.btn--secondary:active:not(:disabled) {
+  background-color: #e8eef5;
+}
+
+/* ── VARIANTE: GHOST ──────────────────────────────────────────────────────── */
+/* Ação discreta — ícones, links de navegação, ações terciárias */
+.btn--ghost {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.btn--ghost:active:not(:disabled) {
+  background-color: var(--color-border);
+}
+
+/* ── VARIANTE: DANGER ─────────────────────────────────────────────────────── */
+/* Ações destrutivas — excluir, remover */
+.btn--danger {
+  background-color: var(--color-error);
+  color: var(--color-text-on-brand);
+  border-color: var(--color-error);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.btn--danger:active:not(:disabled) {
+  background-color: #991b1b;
+}
+
+/* ── ESTADO: DESABILITADO / CARREGANDO ───────────────────────────────────── */
+.btn:disabled,
+.btn--loading {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Permite que o cursor "not-allowed" apareça mesmo com pointer-events: none
+   (definindo no elemento pai quando necessário) */
+
+/* ── SPINNER DE CARREGAMENTO ──────────────────────────────────────────────── */
+.btn__spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: var(--radius-full);
+  animation: btn-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+.btn--lg .btn__spinner {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

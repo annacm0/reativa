@@ -1,0 +1,75 @@
+/*
+  Badge.css — Estilos do componente Badge
+  Exibe status com cor + ponto indicador + texto: "● ATRASADO"
+  Nunca comunica estado apenas por cor (regra de acessibilidade).
+*/
+
+/* ── BASE ─────────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  line-height: 1;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Ponto indicador — reforça a cor com forma (acessibilidade: não depende só da cor)
+   aria-hidden="true" no elemento que gera o ponto evita leitura duplicada */
+.badge__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── VARIANTES ────────────────────────────────────────────────────────────── */
+
+/* NORMAL — retorno no prazo (mais de 7 dias) */
+.badge--normal {
+  background-color: var(--color-normal-bg);
+  color: var(--color-normal);
+}
+
+/* PROXIMO — próximo do período de retorno (0–7 dias) */
+.badge--proximo {
+  background-color: var(--color-proximo-bg);
+  color: var(--color-proximo);
+}
+
+/* ATRASADO — passou do período esperado de retorno */
+.badge--atrasado {
+  background-color: var(--color-atrasado-bg);
+  color: var(--color-atrasado);
+}
+
+/* SUCESSO — ação concluída com sucesso */
+.badge--success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+/* ERRO — falha, problema */
+.badge--error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+/* NEUTRO — informação sem status específico (ex: "ADMIN", tags) */
+.badge--neutral {
+  background-color: var(--color-surface-2);
+  color: var(--color-text-secondary);
+}
+
+/* Neutro não usa ponto — sem estado de urgência */
+.badge--neutral .badge__dot {
+  display: none;
+}
