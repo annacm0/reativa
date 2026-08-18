@@ -1,0 +1,56 @@
+/*
+  Alert.css — Estilos do componente Alert
+  Variantes: error | success | info | warning
+  Inclui ícone + texto — comunicação clara e acessível.
+*/
+
+/* ── BASE ─────────────────────────────────────────────────────────────────── */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  border: 1px solid transparent;
+}
+
+.alert__icon {
+  flex-shrink: 0;
+  margin-top: 1px; /* Alinha o ícone com a primeira linha do texto */
+}
+
+.alert__content {
+  flex: 1;
+}
+
+/* ── VARIANTES ────────────────────────────────────────────────────────────── */
+
+/* Erro — 401, falha de login, problema de rede */
+.alert--error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  border-color: rgb(220 38 38 / 0.2);
+}
+
+/* Sucesso — ação concluída */
+.alert--success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: rgb(22 163 74 / 0.2);
+}
+
+/* Informação — aviso neutro */
+.alert--info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+  border-color: rgb(37 99 235 / 0.2);
+}
+
+/* Aviso — atenção, sem ser erro */
+.alert--warning {
+  background-color: var(--color-proximo-bg);
+  color: var(--color-proximo);
+  border-color: rgb(217 119 6 / 0.2);
+}

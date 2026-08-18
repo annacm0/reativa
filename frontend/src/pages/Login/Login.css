@@ -1,0 +1,142 @@
+/*
+  Login.css — Estilos da página de Login e layout compartilhado de autenticação
+  As classes .auth-* são compartilhadas com Register.css por convenção de nomes.
+*/
+
+/* ── PÁGINA ───────────────────────────────────────────────────────────────── */
+/* Centraliza o card na tela inteira com fundo suave */
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  /* Gradiente sutil que remete à identidade visual sem sobrepor o conteúdo */
+  background: linear-gradient(160deg, #e8f4fd 0%, var(--color-bg) 55%);
+  padding: var(--space-6) var(--space-4);
+}
+
+/* ── CARD ─────────────────────────────────────────────────────────────────── */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-10) var(--space-8);
+}
+
+/* ── MARCA ────────────────────────────────────────────────────────────────── */
+/* Área do logotipo/nome no topo do card */
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+  text-decoration: none;
+}
+
+/* Marca geométrica — placeholder até o logo definitivo ser fornecido */
+.auth-brand__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-deep) 0%,
+    var(--color-brand-teal) 100%
+  );
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.auth-brand__name {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-brand-deep);
+  letter-spacing: -0.02em;
+}
+
+/* ── CABEÇALHO DO CARD ────────────────────────────────────────────────────── */
+.auth-header {
+  margin-bottom: var(--space-6);
+}
+
+.auth-header__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-1);
+}
+
+.auth-header__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── FORMULÁRIO ───────────────────────────────────────────────────────────── */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Alert de erro da API — espaço extra antes e depois */
+.auth-form .alert {
+  margin-bottom: var(--space-1);
+}
+
+.auth-form__submit {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+/* ── RODAPÉ DO CARD ───────────────────────────────────────────────────────── */
+.auth-footer {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.auth-footer a {
+  color: var(--color-brand-teal);
+  font-weight: var(--font-medium);
+  transition: color var(--transition-fast);
+  text-underline-offset: 2px;
+}
+
+.auth-footer a:hover {
+  color: var(--color-brand-teal-hv);
+  text-decoration: underline;
+}
+
+/* ── RESPONSIVIDADE ───────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: var(--space-8) var(--space-5);
+    border-radius: var(--radius-lg);
+    /* Remove sombra pesada em mobile — borda suficiente */
+    box-shadow: var(--shadow-md);
+  }
+
+  .auth-header__title {
+    font-size: var(--text-xl);
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-page {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .auth-card {
+    padding: var(--space-6) var(--space-4);
+  }
+}

@@ -1,8 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { AuthProvider } from './contexts/AuthContext';
+import { PrivateRoute } from './routes/PrivateRoute';
+import Login from './pages/Login/Login';
+import Register from './pages/Register/Register';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Placeholder temporário — substituído página a página nas etapas seguintes.
-// Usa HTML semântico (<main>, <h1>) e classes do design system, sem Tailwind.
+// Usa HTML semântico (<main>, <h1>) e classes do design system.
 // ──────────────────────────────────────────────────────────────────────────────
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -14,36 +19,81 @@ function PlaceholderPage({ title }: { title: string }) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Estrutura de rotas do MVP:
-//   Públicas:   /login, /register
-//   Protegidas: /dashboard, /clients, /services, /appointments, /retention
+// AppRoutes — componente interno que acessa o QueryClient
 //
-// A proteção de rotas (PrivateRoute) será implementada na ETAPA 2,
-// junto com o AuthContext. Até lá, todas as rotas são acessíveis.
+// Por que separar de App?
+//   O AuthProvider precisa do queryClient (para queryClient.clear() no logout).
+//   O useQueryClient() só funciona dentro do QueryClientProvider.
+//   O QueryClientProvider está em main.tsx, que envolve <App />.
+//   Logo, AppRoutes (filho de App) pode chamar useQueryClient() normalmente.
+//
+//   Estrutura de provedores (de fora para dentro):
+//     QueryClientProvider (main.tsx)
+//       BrowserRouter (App.tsx)
+//         AuthProvider (AppRoutes — usa queryClient do contexto acima)
+//           rotas
+// ──────────────────────────────────────────────────────────────────────────────
+function AppRoutes() {
+  const queryClient = useQueryClient();
+
+  return (
+    <AuthProvider queryClient={queryClient}>
+      <Routes>
+        {/* ── Rotas públicas ───────────────────────────────────────────── */}
+        {/* Acessíveis sem autenticação */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* ── Rotas protegidas ─────────────────────────────────────────── */}
+        {/*
+          PrivateRoute verifica autenticação antes de renderizar qualquer filho.
+          - Não autenticado → redireciona para /login (preserva rota de destino)
+          - isLoading → exibe Loading (verificação inicial do token)
+          - Autenticado → renderiza via <Outlet />
+          
+          companyId nunca vem do frontend — é parte do token JWT gerenciado
+          exclusivamente pelo AuthContext e validado pelo backend em cada requisição.
+        */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<PlaceholderPage title="Início" />} />
+          <Route path="/clients" element={<PlaceholderPage title="Clientes" />} />
+          <Route
+            path="/clients/:id"
+            element={<PlaceholderPage title="Detalhe do Cliente" />}
+          />
+          <Route path="/services" element={<PlaceholderPage title="Serviços" />} />
+          <Route
+            path="/appointments"
+            element={<PlaceholderPage title="Atendimentos" />}
+          />
+          <Route
+            path="/retention"
+            element={<PlaceholderPage title="Clientes para Reativar" />}
+          />
+        </Route>
+
+        {/* ── Raiz → dashboard ─────────────────────────────────────────── */}
+        {/* PrivateRoute redireciona para /login se não autenticado */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+        {/* ── 404 ──────────────────────────────────────────────────────── */}
+        <Route
+          path="*"
+          element={<PlaceholderPage title="Página não encontrada" />}
+        />
+      </Routes>
+    </AuthProvider>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// App — ponto de entrada de roteamento
+// BrowserRouter envolve AppRoutes para que useNavigate/useLocation funcionem.
 // ──────────────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* ── Rotas públicas ─────────────────────────────────────────── */}
-        <Route path="/login" element={<PlaceholderPage title="Entrar" />} />
-        <Route path="/register" element={<PlaceholderPage title="Criar conta" />} />
-
-        {/* ── Rotas protegidas — core multissegmento ──────────────────── */}
-        {/* companyId vem sempre do token JWT — nunca do frontend */}
-        <Route path="/dashboard" element={<PlaceholderPage title="Início" />} />
-        <Route path="/clients" element={<PlaceholderPage title="Clientes" />} />
-        <Route path="/clients/:id" element={<PlaceholderPage title="Detalhe do Cliente" />} />
-        <Route path="/services" element={<PlaceholderPage title="Serviços" />} />
-        <Route path="/appointments" element={<PlaceholderPage title="Atendimentos" />} />
-        <Route path="/retention" element={<PlaceholderPage title="Clientes para Reativar" />} />
-
-        {/* ── Raiz → dashboard (usuário autenticado vai direto ao início) */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-        {/* ── 404 ─────────────────────────────────────────────────────── */}
-        <Route path="*" element={<PlaceholderPage title="Página não encontrada" />} />
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
   );
 }
