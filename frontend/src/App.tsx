@@ -5,6 +5,8 @@ import { PrivateRoute } from './routes/PrivateRoute';
 import { AppLayout } from './layouts/AppLayout/AppLayout';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
+import ClientsPage from './pages/Clients/Clients';
+import ClientDetail from './pages/Clients/ClientDetail';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Placeholder temporário — substituído por página real em cada etapa seguinte.
@@ -57,8 +59,8 @@ function AppRoutes() {
         <Route element={<PrivateRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard"    element={<PlaceholderPage title="Início" />} />
-            <Route path="/clients"      element={<PlaceholderPage title="Clientes" />} />
-            <Route path="/clients/:id"  element={<PlaceholderPage title="Detalhe do Cliente" />} />
+            <Route path="/clients"      element={<ClientsPage />} />
+            <Route path="/clients/:id"  element={<ClientDetail />} />
             <Route path="/services"     element={<PlaceholderPage title="Serviços" />} />
             <Route path="/appointments" element={<PlaceholderPage title="Atendimentos" />} />
             <Route path="/retention"    element={<PlaceholderPage title="Clientes para Reativar" />} />

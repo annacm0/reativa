@@ -40,8 +40,12 @@ export interface AuthUser {
 export interface Client {
   id: string;
   name: string;
+  /** Armazenado normalizado pelo backend: "5511999999999" */
   phone: string;
-  notes?: string;
+  /** null quando não informado — não enviar no body para omitir */
+  email: string | null;
+  /** null quando não informado — null no body para remover */
+  notes: string | null;
   companyId: string;
   createdAt: string;
   updatedAt: string;

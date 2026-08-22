@@ -1,0 +1,47 @@
+/*
+  ClientForm.css — Formulário de cliente (criação e edição)
+*/
+
+.client-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Mensagem de sucesso inline — aparece após salvar com sucesso */
+.client-form__success {
+  /* Usa as classes do Alert — nenhum estilo adicional necessário */
+}
+
+/* Linha com dois campos lado a lado em desktop */
+.client-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 520px) {
+  .client-form__row {
+    grid-template-columns: 1fr; /* empilha em mobile */
+  }
+}
+
+/* Ações do formulário — botões ao final */
+.client-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 480px) {
+  .client-form__actions {
+    flex-direction: column-reverse;
+  }
+
+  .client-form__actions .btn {
+    width: 100%;
+  }
+}
