@@ -1,0 +1,42 @@
+/*
+  ServiceForm.css — Formulário de serviço (criação e edição)
+*/
+
+.service-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Linha com dois campos lado a lado em desktop */
+.service-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 520px) {
+  .service-form__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ações do formulário */
+.service-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 480px) {
+  .service-form__actions {
+    flex-direction: column-reverse;
+  }
+
+  .service-form__actions .btn {
+    width: 100%;
+  }
+}

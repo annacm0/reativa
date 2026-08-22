@@ -7,6 +7,8 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import ClientsPage from './pages/Clients/Clients';
 import ClientDetail from './pages/Clients/ClientDetail';
+import ServicesPage from './pages/Services/Services';
+import ServiceDetail from './pages/Services/ServiceDetail';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Placeholder temporário — substituído por página real em cada etapa seguinte.
@@ -61,7 +63,8 @@ function AppRoutes() {
             <Route path="/dashboard"    element={<PlaceholderPage title="Início" />} />
             <Route path="/clients"      element={<ClientsPage />} />
             <Route path="/clients/:id"  element={<ClientDetail />} />
-            <Route path="/services"     element={<PlaceholderPage title="Serviços" />} />
+            <Route path="/services"     element={<ServicesPage />} />
+            <Route path="/services/:id" element={<ServiceDetail />} />
             <Route path="/appointments" element={<PlaceholderPage title="Atendimentos" />} />
             <Route path="/retention"    element={<PlaceholderPage title="Clientes para Reativar" />} />
           </Route>

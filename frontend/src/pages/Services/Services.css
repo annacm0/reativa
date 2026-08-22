@@ -1,0 +1,262 @@
+/*
+  Services.css — Página de listagem de serviços + Drawer de criação
+
+  Estrutura análoga ao Clients.css, com ajustes no item da lista para
+  exibir returnIntervalDays e durationMinutes em contexto.
+*/
+
+/* ── PÁGINA ───────────────────────────────────────────────────────────────── */
+.services-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: var(--content-max-width);
+}
+
+/* ── CABEÇALHO ────────────────────────────────────────────────────────────── */
+.services-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.services-header__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+  line-height: var(--leading-tight);
+}
+
+/* ── BUSCA ────────────────────────────────────────────────────────────────── */
+.services-search {
+  position: relative;
+  max-width: 360px;
+}
+
+.services-search__icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.services-search__input {
+  width: 100%;
+  height: var(--input-height);
+  padding: 0 var(--space-3) 0 var(--space-9);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.services-search__input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.services-search__input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgb(32 196 208 / 0.15);
+}
+
+/* ── LISTA ────────────────────────────────────────────────────────────────── */
+.services-list {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ── ITEM DA LISTA ────────────────────────────────────────────────────────── */
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-fast);
+}
+
+.service-item:last-child {
+  border-bottom: none;
+}
+
+.service-item:hover {
+  background-color: var(--color-surface-2);
+}
+
+.service-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.service-item__name {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.service-item__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+  flex-wrap: wrap;
+}
+
+/* "30 dias" — destaca o intervalo de retorno */
+.service-item__interval {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* "60 min" — duração, quando informada */
+.service-item__duration {
+  font-size: var(--text-sm);
+  color: var(--color-text-disabled);
+  white-space: nowrap;
+}
+
+.service-item__separator {
+  width: 3px;
+  height: 3px;
+  background-color: var(--color-text-disabled);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.service-item__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* ── DRAWER DE CRIAÇÃO ────────────────────────────────────────────────────── */
+/* Reutiliza as classes do Clients.css — mesma estrutura visual */
+.service-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(0 0 0 / 0.35);
+  z-index: calc(var(--z-modal) - 1);
+  animation: backdrop-fade-in var(--transition-normal);
+}
+
+.service-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 520px; /* um pouco mais largo para os campos numéricos com hint */
+  background-color: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  animation: drawer-slide-in var(--transition-slow);
+}
+
+.service-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.service-drawer__title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.service-drawer__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  outline: none;
+}
+
+.service-drawer__close:hover {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.service-drawer__close:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.service-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+/* ── RESPONSIVIDADE ───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .services-header__title {
+    font-size: var(--text-xl);
+  }
+
+  .services-search {
+    max-width: 100%;
+  }
+
+  .service-drawer {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-item {
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-2);
+  }
+
+  .service-item__info {
+    width: 100%;
+  }
+
+  .service-item__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .service-drawer__header {
+    padding: var(--space-4);
+  }
+
+  .service-drawer__body {
+    padding: var(--space-4);
+  }
+}

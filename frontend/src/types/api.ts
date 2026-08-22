@@ -57,6 +57,8 @@ export interface Service {
   name: string;
   /** Intervalo esperado de retorno em dias — base do motor de reativação */
   returnIntervalDays: number;
+  /** Duração em minutos — informativo, opcional, reservado para agenda futura */
+  durationMinutes: number | null;
   companyId: string;
   createdAt: string;
   updatedAt: string;
