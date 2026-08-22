@@ -1,0 +1,119 @@
+/*
+  Header.css — Cabeçalho da área de conteúdo autenticada
+
+  Posição: sticky no topo do .app-layout__body.
+  Altura: var(--header-height) = 60px (token centralizado em variables.css).
+  Visual: branco com borda inferior sutil — contrasta com o fundo --color-bg das páginas.
+*/
+
+/* ── CONTAINER ────────────────────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: var(--header-height);
+  padding: 0 var(--space-8);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  /* Sticky: permanece visível enquanto app-layout__main faz scroll */
+  position: sticky;
+  top: 0;
+  z-index: var(--z-dropdown);
+  flex-shrink: 0; /* não encolhe no flex column do app-layout__body */
+}
+
+/* ── BOTÃO HAMBURGER ──────────────────────────────────────────────────────── */
+/* Visível apenas em mobile (≤768px). Em desktop: display: none via media query. */
+.app-header__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+  outline: none;
+}
+
+.app-header__menu-btn:hover {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: #c8d4e0;
+}
+
+.app-header__menu-btn:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ── TÍTULO DA PÁGINA ─────────────────────────────────────────────────────── */
+/*
+  Elemento <p> — o heading semântico (<h1>) fica dentro do conteúdo de cada página.
+  Visualmente aparece como um título de seção, mas não é heading para leitores de tela,
+  evitando h1 duplicado (um no header, outro na página).
+*/
+.app-header__title {
+  flex: 1;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  line-height: var(--leading-tight);
+  /* Trunca em caso de título muito longo (não esperado, mas seguro) */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0; /* reset de margin do <p> */
+}
+
+/* ── ÁREA DO USUÁRIO ──────────────────────────────────────────────────────── */
+.app-header__user {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/*
+  Nome do usuário autenticado — vindo do AuthContext (user.name).
+  Tamanho e cor discretos: presença sem competir com o título da página.
+*/
+.app-header__user-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  /* Trunca nomes longos */
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── RESPONSIVIDADE ───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .app-header__menu-btn {
+    display: flex; /* aparece em mobile */
+  }
+
+  .app-header__user-name {
+    max-width: 120px;
+  }
+}
+
+/* Em telas muito pequenas, oculta o nome para não conflitar com o título */
+@media (max-width: 400px) {
+  .app-header__user-name {
+    display: none;
+  }
+}

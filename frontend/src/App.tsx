@@ -2,36 +2,34 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './routes/PrivateRoute';
+import { AppLayout } from './layouts/AppLayout/AppLayout';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Placeholder temporário — substituído página a página nas etapas seguintes.
-// Usa HTML semântico (<main>, <h1>) e classes do design system.
+// Placeholder temporário — substituído por página real em cada etapa seguinte.
+// Renderiza dentro do <main> do AppLayout, sem wrapper de layout próprio.
+// Não usa <main> — o AppLayout já fornece o único <main> da página.
 // ──────────────────────────────────────────────────────────────────────────────
 function PlaceholderPage({ title }: { title: string }) {
   return (
-    <main className="placeholder-page">
-      <h1 className="page-title">{title}</h1>
+    <div className="placeholder-page">
+      <p className="page-title">{title}</p>
       <p className="helper-text">Em desenvolvimento…</p>
-    </main>
+    </div>
   );
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// AppRoutes — componente interno que acessa o QueryClient
+// AppRoutes — acessa o QueryClient (precisa estar dentro do QueryClientProvider)
 //
-// Por que separar de App?
-//   O AuthProvider precisa do queryClient (para queryClient.clear() no logout).
-//   O useQueryClient() só funciona dentro do QueryClientProvider.
-//   O QueryClientProvider está em main.tsx, que envolve <App />.
-//   Logo, AppRoutes (filho de App) pode chamar useQueryClient() normalmente.
-//
-//   Estrutura de provedores (de fora para dentro):
-//     QueryClientProvider (main.tsx)
-//       BrowserRouter (App.tsx)
-//         AuthProvider (AppRoutes — usa queryClient do contexto acima)
-//           rotas
+// Hierarquia de provedores (de fora para dentro):
+//   QueryClientProvider (main.tsx)
+//     BrowserRouter (App.tsx)
+//       AuthProvider (AppRoutes)
+//         PrivateRoute (verifica autenticação)
+//           AppLayout (renderiza Sidebar + Header + Outlet)
+//             páginas (renderizadas no Outlet do AppLayout)
 // ──────────────────────────────────────────────────────────────────────────────
 function AppRoutes() {
   const queryClient = useQueryClient();
@@ -40,56 +38,43 @@ function AppRoutes() {
     <AuthProvider queryClient={queryClient}>
       <Routes>
         {/* ── Rotas públicas ───────────────────────────────────────────── */}
-        {/* Acessíveis sem autenticação */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* ── Rotas protegidas ─────────────────────────────────────────── */}
         {/*
-          PrivateRoute verifica autenticação antes de renderizar qualquer filho.
-          - Não autenticado → redireciona para /login (preserva rota de destino)
-          - isLoading → exibe Loading (verificação inicial do token)
-          - Autenticado → renderiza via <Outlet />
-          
-          companyId nunca vem do frontend — é parte do token JWT gerenciado
-          exclusivamente pelo AuthContext e validado pelo backend em cada requisição.
+          PrivateRoute verifica autenticação:
+            - isLoading     → exibe Loading
+            - não autenticado → redireciona /login com state.from
+            - autenticado   → renderiza filho via Outlet
+
+          AppLayout renderiza o layout permanente (Sidebar + Header):
+            - Sidebar e Header aparecem UMA vez aqui
+            - Cada página renderiza apenas seu conteúdo via Outlet
+
+          companyId nunca vem do frontend — JWT gerenciado pelo AuthContext.
         */}
         <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<PlaceholderPage title="Início" />} />
-          <Route path="/clients" element={<PlaceholderPage title="Clientes" />} />
-          <Route
-            path="/clients/:id"
-            element={<PlaceholderPage title="Detalhe do Cliente" />}
-          />
-          <Route path="/services" element={<PlaceholderPage title="Serviços" />} />
-          <Route
-            path="/appointments"
-            element={<PlaceholderPage title="Atendimentos" />}
-          />
-          <Route
-            path="/retention"
-            element={<PlaceholderPage title="Clientes para Reativar" />}
-          />
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard"    element={<PlaceholderPage title="Início" />} />
+            <Route path="/clients"      element={<PlaceholderPage title="Clientes" />} />
+            <Route path="/clients/:id"  element={<PlaceholderPage title="Detalhe do Cliente" />} />
+            <Route path="/services"     element={<PlaceholderPage title="Serviços" />} />
+            <Route path="/appointments" element={<PlaceholderPage title="Atendimentos" />} />
+            <Route path="/retention"    element={<PlaceholderPage title="Clientes para Reativar" />} />
+          </Route>
         </Route>
 
         {/* ── Raiz → dashboard ─────────────────────────────────────────── */}
-        {/* PrivateRoute redireciona para /login se não autenticado */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
         {/* ── 404 ──────────────────────────────────────────────────────── */}
-        <Route
-          path="*"
-          element={<PlaceholderPage title="Página não encontrada" />}
-        />
+        <Route path="*" element={<PlaceholderPage title="Página não encontrada" />} />
       </Routes>
     </AuthProvider>
   );
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// App — ponto de entrada de roteamento
-// BrowserRouter envolve AppRoutes para que useNavigate/useLocation funcionem.
-// ──────────────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
     <BrowserRouter>
