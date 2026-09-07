@@ -10,15 +10,13 @@
  * se o número não começar com ele.
  *
  * Exemplos:
- *   "(11) 99999-9999"  → "5511999999999"
- *   "11999999999"      → "5511999999999"
+ *   "(11) 99999-9999"   → "5511999999999"
+ *   "11999999999"       → "5511999999999"
  *   "+55 11 99999-9999" → "5511999999999"
  */
 export function normalizePhoneNumber(phone: string): string {
-  // Remove tudo que não é dígito
   const digits = phone.replace(/\D/g, '');
 
-  // Adiciona o DDI do Brasil (55) se ainda não tiver
   if (digits.startsWith('55')) {
     return digits;
   }
@@ -29,7 +27,7 @@ export function normalizePhoneNumber(phone: string): string {
 /**
  * Gera o link do WhatsApp com mensagem pré-preenchida.
  *
- * @param phone - Número de telefone (qualquer formato)
+ * @param phone   - Número de telefone (qualquer formato)
  * @param message - Mensagem a ser pré-preenchida
  * @returns URL completa do WhatsApp (wa.me)
  */
@@ -40,23 +38,26 @@ export function generateWhatsAppLink(phone: string, message: string): string {
 }
 
 /**
- * Gera a mensagem personalizada de reativação.
+ * Gera a mensagem genérica de reativação.
  *
- * @param clientName - Nome do cliente (responsável)
- * @param petName - Nome do pet
- * @param serviceName - Nome do serviço (ex: "Banho")
+ * Funciona para qualquer segmento de negócio:
+ *   "Olá, Ana! Já está próximo do período do seu Corte de Cabelo."
+ *   "Olá, Carlos! Já está próximo do período da sua Troca de Óleo."
+ *   "Olá, Lucia! Já está próximo do período da sua Consulta de Rotina."
+ *
+ * @param clientName  - Nome completo do cliente
+ * @param serviceName - Nome do serviço (ex: "Banho", "Corte", "Troca de Óleo")
  */
 export function generateRetentionMessage(
   clientName: string,
-  petName: string,
   serviceName: string
 ): string {
-  // Pega apenas o primeiro nome para deixar mais informal
+  // Pega apenas o primeiro nome para deixar a mensagem mais pessoal e informal
   const firstName = clientName.split(' ')[0];
 
   return (
     `Olá, ${firstName}! Tudo bem? 😊 ` +
-    `Já está próximo do período habitual do próximo ${serviceName.toLowerCase()} da ${petName}. ` +
-    `Gostaria de verificar um horário?`
+    `Já está próximo do período habitual do seu ${serviceName}. ` +
+    `Gostaria de agendar um horário?`
   );
 }

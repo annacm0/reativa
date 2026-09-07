@@ -3,20 +3,19 @@
 // Estas funções implementam as regras de negócio centrais:
 // "Quando um cliente deve retornar? Já passou do prazo?"
 
-export type ReturnStatus = 'NORMAL' | 'PROXIMO' | 'ATRASADO';
+import { RETURN_WINDOW_DAYS } from '../config/retention.config';
 
-// Janela (em dias) que define o período "PRÓXIMO" antes e depois da data prevista.
-// Ex: se o retorno era esperado para dia 10, clientes entre dia 3 e dia 17
-// são classificados como PRÓXIMO (janela de 7 dias para cada lado).
-const PROXIMATE_WINDOW_DAYS = 7;
+export type ReturnStatus = 'NORMAL' | 'PROXIMO' | 'ATRASADO';
 
 /**
  * Calcula a data prevista de retorno.
  *
- * Exemplo:
- *   Último banho: 10/07/2026
+ * Exemplo (salão de beleza):
+ *   Último corte: 10/07/2026
  *   Intervalo: 30 dias
  *   Retorno previsto: 09/08/2026
+ *
+ * Funciona para qualquer segmento: pet shop, clínica, oficina, etc.
  */
 export function calculateExpectedReturnDate(
   lastAppointmentDate: Date,
@@ -32,7 +31,7 @@ export function calculateExpectedReturnDate(
  *
  * Valor positivo = falta N dias para o retorno
  * Valor negativo = o retorno estava previsto há N dias (atrasado)
- * Zero = o retorno é hoje
+ * Zero           = o retorno é hoje
  */
 export function calculateDaysUntilReturn(expectedReturnDate: Date): number {
   const today = new Date();
@@ -48,32 +47,78 @@ export function calculateDaysUntilReturn(expectedReturnDate: Date): number {
 }
 
 /**
- * Classifica o status de retorno de um cliente/pet.
+ * Verifica se uma data é estritamente futura em relação ao dia atual.
  *
- * Regras:
- *   NORMAL   → mais de 7 dias para o retorno previsto
- *   PROXIMO  → entre -7 e +7 dias do retorno previsto (inclusive)
- *   ATRASADO → mais de 7 dias além do retorno previsto
+ * Ambas as datas são normalizadas para meia-noite (setHours(0,0,0,0))
+ * antes da comparação, eliminando qualquer dependência de horário ou
+ * timezone do servidor. A comparação é puramente entre dias.
+ *
+ * Exemplos:
+ *   hoje         → false (não é futuro)
+ *   ontem        → false
+ *   amanhã       → true
+ *   23:59 de hoje → false (mesmo dia, mesmo que instante seja "futuro")
+ *
+ * Usada pelo schema de Appointment para garantir que a data representa
+ * um atendimento já realizado, sem falso-positivo por timezone.
  */
-export function classifyReturnStatus(daysUntilReturn: number): ReturnStatus {
-  if (daysUntilReturn > PROXIMATE_WINDOW_DAYS) {
-    return 'NORMAL';
+export function isFutureDate(date: Date | string): boolean {
+  // Calcula a string "YYYYMMDD" de hoje, sem dependência de timezone
+  const now = new Date();
+  const todayStr =
+    String(now.getFullYear()) +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0');
+
+  if (typeof date === 'string') {
+    // String "YYYY-MM-DD": remove hífens e compara lexicograficamente.
+    // "20260818" > "20260817" → futuro. Sem conversão de timezone.
+    const dateStr = date.replace(/-/g, '');
+    return dateStr > todayStr;
   }
 
-  if (daysUntilReturn >= -PROXIMATE_WINDOW_DAYS) {
-    return 'PROXIMO';
-  }
+  // Date: extrai ano/mês/dia locais (mesma lógica, sem UTC)
+  const dateStr =
+    String(date.getFullYear()) +
+    String(date.getMonth() + 1).padStart(2, '0') +
+    String(date.getDate()).padStart(2, '0');
 
-  return 'ATRASADO';
+  return dateStr > todayStr;
 }
 
 /**
- * Função principal: dado o último atendimento e o intervalo do serviço,
- * retorna todas as informações de retorno calculadas.
+ * Classifica o status de retorno de um cliente.
+ *
+ * Regras (com windowDays = 7 como padrão do MVP):
+ *   ATRASADO → daysUntilReturn < 0             (data prevista já passou)
+ *   PROXIMO  → 0 <= daysUntilReturn <= windowDays (de hoje até X dias)
+ *   NORMAL   → daysUntilReturn > windowDays    (mais de X dias para o retorno)
+ *
+ * @param daysUntilReturn - Dias até o retorno previsto (negativo = atrasado)
+ * @param windowDays      - Janela de PROXIMO em dias (padrão: RETURN_WINDOW_DAYS)
+ *                          Futuramente virá da configuração por empresa.
+ */
+export function classifyReturnStatus(
+  daysUntilReturn: number,
+  windowDays: number = RETURN_WINDOW_DAYS
+): ReturnStatus {
+  if (daysUntilReturn < 0) return 'ATRASADO';           // já passou a data prevista
+  if (daysUntilReturn <= windowDays) return 'PROXIMO';  // de hoje até X dias
+  return 'NORMAL';                                       // mais de X dias
+}
+
+/**
+ * Função principal: dado o último atendimento, o intervalo do serviço
+ * e a janela de PROXIMO, retorna todas as informações de retorno calculadas.
+ *
+ * @param lastAppointmentDate - Data do último atendimento
+ * @param returnIntervalDays  - Intervalo esperado de retorno (em dias)
+ * @param windowDays          - Janela de PROXIMO (padrão: RETURN_WINDOW_DAYS)
  */
 export function calculateReturnInfo(
   lastAppointmentDate: Date,
-  returnIntervalDays: number
+  returnIntervalDays: number,
+  windowDays: number = RETURN_WINDOW_DAYS
 ): {
   expectedReturnDate: Date;
   daysUntilReturn: number;
@@ -84,7 +129,7 @@ export function calculateReturnInfo(
     returnIntervalDays
   );
   const daysUntilReturn = calculateDaysUntilReturn(expectedReturnDate);
-  const status = classifyReturnStatus(daysUntilReturn);
+  const status = classifyReturnStatus(daysUntilReturn, windowDays);
 
   return { expectedReturnDate, daysUntilReturn, status };
 }

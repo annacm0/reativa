@@ -1,0 +1,101 @@
+/*
+  Input.css — Estilos do componente Input
+  Cobre: campo de texto, label, hint, mensagem de erro, estados.
+*/
+
+/* ── WRAPPER ──────────────────────────────────────────────────────────────── */
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* ── LABEL ────────────────────────────────────────────────────────────────── */
+.input-field__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+  line-height: var(--leading-tight);
+  cursor: pointer; /* Indica que clicar no label foca o input (via htmlFor) */
+}
+
+/* Asterisco de campo obrigatório — escondido do leitor de tela via aria-hidden */
+.input-field__required {
+  color: var(--color-error);
+  font-size: var(--text-xs);
+  line-height: 1;
+}
+
+/* ── CONTROLE (INPUT) ─────────────────────────────────────────────────────── */
+.input-field__control {
+  width: 100%;
+  height: var(--input-height);
+  padding: 0 var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  /* Remove aparência padrão de alguns browsers */
+  appearance: none;
+}
+
+.input-field__control::placeholder {
+  color: var(--color-text-disabled);
+}
+
+/* Estado: foco */
+.input-field__control:focus {
+  outline: none; /* Foco customizado abaixo */
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgb(32 196 208 / 0.15);
+}
+
+/* Estado: desabilitado */
+.input-field__control:disabled {
+  background-color: var(--color-surface-2);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  border-color: var(--color-border);
+}
+
+/* Estado: erro */
+.input-field__control--error {
+  border-color: var(--color-error);
+}
+
+.input-field__control--error:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgb(220 38 38 / 0.12);
+}
+
+/* Textarea — herda os mesmos estilos do input, mas com altura variável */
+textarea.input-field__control {
+  height: auto;
+  min-height: 80px;
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+  line-height: var(--leading-normal);
+}
+
+/* ── TEXTO DE AJUDA ───────────────────────────────────────────────────────── */
+.input-field__hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── MENSAGEM DE ERRO ─────────────────────────────────────────────────────── */
+/* role="alert" garante que leitores de tela anunciem o erro ao aparecer */
+.input-field__error {
+  font-size: var(--text-xs);
+  color: var(--color-error);
+  line-height: var(--leading-normal);
+}

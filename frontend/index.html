@@ -1,10 +1,45 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend-temp</title>
+
+    <!--
+      Meta description: usada pelo Google e redes sociais para descrever a página.
+      Relevante especialmente para páginas públicas (login, landing page futura).
+    -->
+    <meta
+      name="description"
+      content="Reativa — Identifique quem está próximo do retorno e facilite a reativação dos seus clientes."
+    />
+
+    <!--
+      Open Graph: controla como o link aparece ao compartilhar em redes sociais.
+      Atualizar og:url e og:image quando existir domínio e assets definitivos.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Reativa — Recupere seus clientes recorrentes" />
+    <meta
+      property="og:description"
+      content="Identifique quem está próximo do retorno e facilite a reativação dos seus clientes."
+    />
+
+    <title>Reativa — Recupere seus clientes recorrentes</title>
+
+    <!--
+      Montserrat via Google Fonts — tipografia oficial da interface do Reativa.
+      Pesos carregados: 400 (textos), 500 (labels/navegação), 600 (títulos/botões).
+      Peso 700 não carregado — --font-bold está normalizado para 600 no design system.
+      preconnect: inicia conexão com servidores do Google Fonts antes da tag link.
+      crossorigin obrigatório no segundo preconnect (fonts.gstatic.com).
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>

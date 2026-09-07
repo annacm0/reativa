@@ -1,0 +1,61 @@
+/*
+  ServiceDetail.css — Página de detalhe e edição de serviço
+  Estrutura idêntica ao ClientDetail.css.
+*/
+
+.service-detail-page {
+  max-width: 640px;
+}
+
+.service-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  margin-bottom: var(--space-4);
+  padding: var(--space-1) 0;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+  outline: none;
+}
+
+.service-detail__back:hover {
+  color: var(--color-brand-teal);
+}
+
+.service-detail__back:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.service-detail__header {
+  margin-bottom: var(--space-6);
+}
+
+.service-detail__name {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+  line-height: var(--leading-tight);
+}
+
+.service-detail__card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+@media (max-width: 480px) {
+  .service-detail__card {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+  }
+
+  .service-detail__name {
+    font-size: var(--text-xl);
+  }
+}

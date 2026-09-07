@@ -1,0 +1,65 @@
+/*
+  Loading.css — Estilos do componente Loading
+*/
+
+/* ── WRAPPER ──────────────────────────────────────────────────────────────── */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+/* ── SPINNER ──────────────────────────────────────────────────────────────── */
+.loading__spinner {
+  display: inline-block;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-brand-teal);
+  animation: loading-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Tamanhos */
+.loading--sm .loading__spinner {
+  width: 16px;
+  height: 16px;
+}
+
+.loading--md .loading__spinner {
+  width: 24px;
+  height: 24px;
+}
+
+.loading--lg .loading__spinner {
+  width: 36px;
+  height: 36px;
+  border-width: 3px;
+}
+
+/* ── TEXTO ────────────────────────────────────────────────────────────────── */
+.loading__text {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.loading--lg .loading__text {
+  font-size: var(--text-base);
+}
+
+/* ── ANIMAÇÃO ─────────────────────────────────────────────────────────────── */
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── VARIANTE: TELA INTEIRA ───────────────────────────────────────────────── */
+/* Usado em carregamentos de página completa */
+.loading--fullpage {
+  min-height: 60vh;
+  flex-direction: column;
+  gap: var(--space-4);
+}

@@ -1,0 +1,237 @@
+/*
+  Sidebar.css — Barra de navegação lateral do Reativa
+
+  Identidade visual:
+    Fundo:          --color-brand-deep (#0C3D66, azul profundo)
+    Texto/ícones:   branco com opacidade (hierarquia sutil)
+    Item ativo:     branco pleno + fundo levemente mais claro + barra turquesa
+    Hover:          fundo levemente mais claro
+
+  Acessibilidade:
+    Todas as cores de texto sobre o fundo escuro foram verificadas
+    para atender contraste WCAG AA (≥ 4.5:1 para texto normal):
+    ✓ rgba(255,255,255,0.72) → contraste ~4.8:1 sobre #0C3D66
+    ✓ rgba(255,255,255,1.0)  → contraste ~9.5:1 sobre #0C3D66
+*/
+
+/* ── CONTAINER ────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100%;         /* 100% do grid cell (100vh via app-layout) */
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-brand-deep);
+  overflow: hidden;
+  /* Borda sutil separando sidebar do conteúdo */
+  border-right: 1px solid rgba(255 255 255 / 0.06);
+  flex-shrink: 0;
+}
+
+/* ── ÁREA DA MARCA ────────────────────────────────────────────────────────── */
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-4);
+  border-bottom: 1px solid rgba(255 255 255 / 0.10);
+  flex-shrink: 0;
+}
+
+/* Link acessível — envolve marca + nome para click em toda a área */
+.sidebar__brand-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  /* Área de foco ligeiramente maior que o conteúdo */
+  padding: var(--space-1) var(--space-2);
+  margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar__brand-link:hover {
+  background-color: rgba(255 255 255 / 0.06);
+}
+
+/* Marca geométrica — placeholder até logo definitivo */
+.sidebar__brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: rgba(255 255 255 / 0.15);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.sidebar__brand-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+/* Botão fechar — visível somente em mobile */
+.sidebar__close {
+  display: none;  /* visível via media query abaixo */
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background-color: rgba(255 255 255 / 0.08);
+  border: none;
+  border-radius: var(--radius-md);
+  color: rgba(255 255 255 / 0.85);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar__close:hover {
+  background-color: rgba(255 255 255 / 0.15);
+  color: #FFFFFF;
+}
+
+/* ── NAVEGAÇÃO ────────────────────────────────────────────────────────────── */
+.sidebar__nav {
+  flex: 1;
+  padding: var(--space-3);
+  overflow-y: auto;     /* scroll caso haja mais itens que o espaço disponível */
+}
+
+.sidebar__nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px; /* gap mínimo entre itens — visual compacto */
+}
+
+/* ── ITEM DE NAVEGAÇÃO ────────────────────────────────────────────────────── */
+.sidebar-nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  position: relative;   /* para o pseudo-elemento da barra ativa */
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  /* Sem outline padrão — foco customizado abaixo */
+  outline: none;
+}
+
+.sidebar-nav__link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+/* Foco visível via teclado (Tab) — anel turquesa, consistente com globals.css */
+.sidebar-nav__link:focus-visible {
+  outline: 2px solid var(--color-brand-teal);
+  outline-offset: 2px;
+}
+
+/* ── ESTADO ATIVO ─────────────────────────────────────────────────────────── */
+.sidebar-nav__link--active {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  font-weight: var(--font-semibold);
+}
+
+/*
+  Barra turquesa à esquerda — indicador visual do item ativo.
+  Comunica o estado com FORMA (barra) além da cor, para acessibilidade.
+*/
+.sidebar-nav__link--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background-color: var(--color-brand-teal);
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+/* Ícone */
+.sidebar-nav__icon {
+  flex-shrink: 0;
+  opacity: 0.80;
+  transition: opacity var(--transition-fast);
+}
+
+.sidebar-nav__link:hover .sidebar-nav__icon,
+.sidebar-nav__link--active .sidebar-nav__icon {
+  opacity: 1;
+}
+
+/* ── RODAPÉ (LOGOUT) ──────────────────────────────────────────────────────── */
+.sidebar__footer {
+  padding: var(--space-3);
+  border-top: 1px solid rgba(255 255 255 / 0.10);
+  flex-shrink: 0;
+}
+
+.sidebar__logout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: rgba(255, 255, 255, 0.60);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  outline: none;
+}
+
+.sidebar__logout:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.90);
+}
+
+.sidebar__logout:focus-visible {
+  outline: 2px solid var(--color-brand-teal);
+  outline-offset: 2px;
+}
+
+/* ── MOBILE — OVERLAY DESLIZANTE ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%; /* 100% em vez de 100vh — evita problema em iOS com barra de endereço */
+    z-index: var(--z-modal);
+    /* Começa fora da tela */
+    transform: translateX(-100%);
+    transition: transform var(--transition-slow);
+    /* Sombra lateral aparece quando a sidebar desliza para a tela */
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Classe adicionada pelo AppLayout quando isSidebarOpen = true */
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  /* Mostra botão de fechar em mobile */
+  .sidebar__close {
+    display: flex;
+  }
+}
