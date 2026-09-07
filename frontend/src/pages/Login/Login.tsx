@@ -170,7 +170,7 @@ export default function Login() {
 
         <footer className="auth-footer">
           Não tem conta?{' '}
-          <Link to="/register">Criar conta gratuita</Link>
+          <Link to="/register">Criar conta</Link>
         </footer>
       </div>
     </main>
