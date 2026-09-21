@@ -9,6 +9,7 @@ import ClientsPage from './pages/Clients/Clients';
 import ClientDetail from './pages/Clients/ClientDetail';
 import ServicesPage from './pages/Services/Services';
 import ServiceDetail from './pages/Services/ServiceDetail';
+import AppointmentsPage from './pages/Appointments/Appointments';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Placeholder temporário — substituído por página real em cada etapa seguinte.
@@ -65,7 +66,7 @@ function AppRoutes() {
             <Route path="/clients/:id"  element={<ClientDetail />} />
             <Route path="/services"     element={<ServicesPage />} />
             <Route path="/services/:id" element={<ServiceDetail />} />
-            <Route path="/appointments" element={<PlaceholderPage title="Atendimentos" />} />
+            <Route path="/appointments" element={<AppointmentsPage />} />
             <Route path="/retention"    element={<PlaceholderPage title="Clientes para Reativar" />} />
           </Route>
         </Route>

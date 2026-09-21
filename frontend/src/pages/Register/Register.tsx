@@ -50,9 +50,10 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    mode: 'onChange',
   });
 
   const onSubmit = async (formData: RegisterFormData) => {
@@ -225,6 +226,7 @@ export default function Register() {
             variant="primary"
             size="lg"
             isLoading={isSubmitting}
+            disabled={!isValid || isSubmitting}
             className="auth-form__submit"
           >
             Criar conta

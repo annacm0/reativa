@@ -72,9 +72,10 @@ export function ServiceForm({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<ServiceFormValues, unknown, CreateServiceFormData>({
     resolver: zodResolver(createServiceSchema),
+    mode: 'onChange',
     defaultValues: {
       name: defaultValues?.name ?? '',
       returnIntervalDays: defaultValues?.returnIntervalDays,
@@ -175,7 +176,7 @@ export function ServiceForm({
           type="submit"
           variant="primary"
           isLoading={isSubmitting}
-          disabled={showDirtyGuard && !isDirty}
+          disabled={!isValid || isSubmitting || (showDirtyGuard && !isDirty)}
         >
           {submitLabel}
         </Button>

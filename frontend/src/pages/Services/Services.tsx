@@ -108,11 +108,12 @@ export default function Services() {
   return (
     <div className="services-page">
       {/* Título + botão novo */}
-      <div className="services-header">
-        <h1 className="services-header__title">Serviços</h1>
+      <div className="services-header page-header">
+        <h1 className="services-header__title page-header__title">Serviços</h1>
         <Button
           variant="primary"
           size="md"
+          className="page-header__btn"
           onClick={handleOpenDrawer}
           aria-label="Novo serviço"
         >

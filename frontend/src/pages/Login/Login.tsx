@@ -51,9 +51,10 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: 'onChange',
   });
 
   const onSubmit = async (data: LoginFormData) => {
@@ -162,6 +163,7 @@ export default function Login() {
             variant="primary"
             size="lg"
             isLoading={isSubmitting}
+            disabled={!isValid || isSubmitting}
             className="auth-form__submit"
           >
             Entrar

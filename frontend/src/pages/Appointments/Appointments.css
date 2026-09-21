@@ -1,8 +1,12 @@
 /*
-  Services.css — Página de listagem de serviços + Drawer de criação
+  Appointments.css — Página de listagem de atendimentos + Drawer
 
-  Estrutura análoga ao Clients.css, com ajustes no item da lista para
-  exibir returnIntervalDays e durationMinutes em contexto.
+  Inclui:
+    .appointments-page    → container da página
+    .appointments-header  → (alias; layout via .page-header em globals.css)
+    .appointments-list    → lista de atendimentos
+    .appt-item            → item individual
+    .appt-drawer          → painel lateral de criação
 
   Notas de arquitetura:
     - .page-header e .page-header__title são definidos em globals.css
@@ -11,7 +15,7 @@
 */
 
 /* ── PÁGINA ───────────────────────────────────────────────────────────────── */
-.services-page {
+.appointments-page {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
@@ -24,57 +28,35 @@
   Mantido como alias para retrocompatibilidade.
   O comportamento responsivo é gerenciado por .page-header em globals.css.
 */
-.services-header {
+.appointments-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
 }
 
-/* ── BUSCA ────────────────────────────────────────────────────────────────── */
-.services-search {
-  position: relative;
-  max-width: 360px;
-}
+/*
+  Sobrescreve a regra global .page-header__btn { width: 100% } em ≤480px
+  especificamente para o botão do cabeçalho de Atendimentos.
 
-.services-search__icon {
-  position: absolute;
-  left: var(--space-3);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-secondary);
-  pointer-events: none;
-}
+  Motivo: "Registrar atendimento" tem texto longo. Em mobile, forçar 100%
+  causa proporção excessiva. O botão deve ter largura baseada no conteúdo
+  com padding suficiente para área de toque confortável (≥44px de altura).
 
-.services-search__input {
-  width: 100%;
-  height: var(--input-height);
-  padding: 0 var(--space-3) 0 var(--space-8);
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  color: var(--color-text);
-  background-color: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
-  outline: none;
-}
-
-.services-search__input::placeholder {
-  color: var(--color-text-disabled);
-}
-
-.services-search__input:focus {
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px rgb(32 196 208 / 0.15);
+  O botão do EmptyState não usa esta classe — comportamento inalterado.
+*/
+@media (max-width: 480px) {
+  .appt-header__btn {
+    width: auto;
+    align-self: flex-start;
+  }
 }
 
 /* ── LISTA ────────────────────────────────────────────────────────────────── */
-.services-list {
+.appointments-list {
   display: flex;
   flex-direction: column;
+  gap: 0;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -82,7 +64,7 @@
 }
 
 /* ── ITEM DA LISTA ────────────────────────────────────────────────────────── */
-.service-item {
+.appt-item {
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -91,51 +73,73 @@
   transition: background-color var(--transition-fast);
 }
 
-.service-item:last-child {
+.appt-item:last-child {
   border-bottom: none;
 }
 
-.service-item:hover {
+.appt-item:hover {
   background-color: var(--color-surface-2);
 }
 
-.service-item__info {
+/* Info do atendimento — ocupa o espaço restante */
+.appt-item__info {
   flex: 1;
-  min-width: 0;
+  min-width: 0; /* previne overflow em nomes longos */
 }
 
-.service-item__name {
+/* Linha principal: cliente · serviço */
+.appt-item__names {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.appt-item__client {
   font-size: var(--text-base);
   font-weight: var(--font-medium);
   color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* Sem max-width fixo — clamp() adapta ao espaço disponível */
+  max-width: clamp(120px, 40%, 240px);
 }
 
-.service-item__meta {
+.appt-item__separator {
+  color: var(--color-text-disabled);
+  font-size: var(--text-base);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.appt-item__service {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: clamp(100px, 35%, 220px);
+}
+
+/* Linha secundária: data e observação */
+.appt-item__meta {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   margin-top: var(--space-1);
   flex-wrap: wrap;
 }
 
-/* "30 dias" — destaca o intervalo de retorno */
-.service-item__interval {
+.appt-item__date {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
-/* "60 min" — duração, quando informada */
-.service-item__duration {
-  font-size: var(--text-sm);
-  color: var(--color-text-disabled);
-  white-space: nowrap;
-}
-
-.service-item__separator {
+/* Ponto separador entre data e observação */
+.appt-item__dot {
   width: 3px;
   height: 3px;
   background-color: var(--color-text-disabled);
@@ -143,15 +147,25 @@
   flex-shrink: 0;
 }
 
-.service-item__actions {
+.appt-item__notes {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: clamp(140px, 40%, 320px);
+}
+
+/* Ações do item */
+.appt-item__actions {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
 }
 
-/* ── DRAWER DE CRIAÇÃO ────────────────────────────────────────────────────── */
-.service-drawer-backdrop {
+/* ── DRAWER ───────────────────────────────────────────────────────────────── */
+.appt-drawer-backdrop {
   position: fixed;
   inset: 0;
   background-color: rgb(0 0 0 / 0.35);
@@ -161,17 +175,17 @@
 
 /*
   Largura do drawer — comportamento progressivo:
-  Desktop (>768px):  520px máx → um pouco mais largo para campos numéricos com hint
-  Tablet (481-768px): min(90vw, 520px) → margem lateral preserva contexto
+  Desktop (>768px):  480px máx → drawer lateral confortável
+  Tablet (481-768px): min(90vw, 480px) → margem lateral preserva contexto
   Mobile (≤480px):   100vw → ocupa tela inteira
 */
-.service-drawer {
+.appt-drawer {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   width: 100%;
-  max-width: 520px; /* um pouco mais largo para os campos numéricos com hint */
+  max-width: 480px;
   background-color: var(--color-surface);
   border-left: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
@@ -181,7 +195,7 @@
   animation: drawer-slide-in var(--transition-slow);
 }
 
-.service-drawer__header {
+.appt-drawer__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -190,13 +204,13 @@
   flex-shrink: 0;
 }
 
-.service-drawer__title {
+.appt-drawer__title {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   color: var(--color-text);
 }
 
-.service-drawer__close {
+.appt-drawer__close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -213,17 +227,17 @@
   outline: none;
 }
 
-.service-drawer__close:hover {
+.appt-drawer__close:hover {
   background-color: var(--color-surface-2);
   color: var(--color-text);
 }
 
-.service-drawer__close:focus-visible {
+.appt-drawer__close:focus-visible {
   outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
 }
 
-.service-drawer__body {
+.appt-drawer__body {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-6);
@@ -231,45 +245,41 @@
 
 /* ── RESPONSIVIDADE ───────────────────────────────────────────────────────── */
 
-/* Tablet: drawer com margem lateral, busca expande */
+/* Tablet: drawer com margem lateral */
 @media (max-width: 768px) {
-  .services-search {
-    max-width: 100%;
-  }
-
   /* Tablet: preserva parte do contexto ao fundo */
-  .service-drawer {
-    max-width: min(90vw, 520px);
+  .appt-drawer {
+    max-width: min(90vw, 480px);
   }
 }
 
 /* Mobile: empilhamento de itens, drawer full width */
 @media (max-width: 480px) {
-  .service-item {
+  .appt-item {
     flex-wrap: wrap;
     padding: var(--space-3) var(--space-4);
     gap: var(--space-2);
   }
 
-  .service-item__info {
+  .appt-item__info {
     width: 100%;
   }
 
-  .service-item__actions {
+  .appt-item__actions {
     width: 100%;
     justify-content: flex-end;
   }
 
   /* Drawer ocupa toda a tela em mobile */
-  .service-drawer {
+  .appt-drawer {
     max-width: 100%;
   }
 
-  .service-drawer__header {
-    padding: var(--space-4);
+  .appt-drawer__header {
+    padding: var(--space-4) var(--space-4);
   }
 
-  .service-drawer__body {
+  .appt-drawer__body {
     padding: var(--space-4);
   }
 }

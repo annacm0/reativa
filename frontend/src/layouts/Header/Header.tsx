@@ -2,22 +2,23 @@
  * Header.tsx — Cabeçalho da área de conteúdo autenticada
  *
  * Responsabilidades:
- *   ✓ Exibe o título da página atual (derivado do pathname)
- *   ✓ Exibe o nome do usuário autenticado (user.name do AuthContext)
  *   ✓ Renderiza o botão hamburger em mobile (toggle da sidebar)
+ *   ✓ Em mobile (≤768px): exibe o nome da página atual ao lado do hambúrguer
+ *   ✓ Exibe o nome do usuário autenticado (user.name do AuthContext)
  *
- * Título da página:
- *   Derivado do pathname atual via um mapa estático.
+ * Título da página no Header (mobile only):
+ *   Derivado do pathname atual via mapa estático.
+ *   Em desktop, o título fica exclusivamente no conteúdo (.page-header__title).
+ *   Em mobile, o .page-header__title é ocultado via CSS (globals.css) e o
+ *   título aparece aqui no header, ao lado do hambúrguer — sem duplicação.
  *   Rotas filhas (ex: /clients/:id) fazem match por prefixo.
- *   Isso evita que cada página precise gerenciar um estado de título externo.
- *   Quando páginas precisarem de títulos dinâmicos (ex: "Ana — Detalhe"),
- *   o caminho natural será um Context simples — adicionado quando necessário.
  *
  * Acessibilidade:
  *   ✓ <header> — landmark "banner" detectado por leitores de tela
  *   ✓ Botão hamburger com aria-label e aria-expanded (estado aberto/fechado)
  *   ✓ Ícone do hamburger com aria-hidden (decorativo)
- *   ✓ Título como <p> — h1 fica dentro do conteúdo de cada página
+ *   ✓ Título como <p> — h1 real fica dentro do conteúdo de cada página
+ *   ✓ menuBtnRef passado pelo AppLayout para devolução de foco ao fechar sidebar
  */
 
 import { useLocation } from 'react-router-dom';
@@ -27,7 +28,8 @@ import './Header.css';
 
 // ── MAPA DE TÍTULOS ────────────────────────────────────────────────────────
 // Centralizado aqui — único lugar para manter ou adicionar títulos.
-// Quando uma nova rota for adicionada, adicionar também aqui.
+// Exibido SOMENTE em mobile (≤768px) no Header.
+// Em desktop, o título fica no <h1> dentro do conteúdo de cada página.
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard':    'Início',
@@ -46,11 +48,9 @@ const PAGE_TITLES: Record<string, string> = {
  *   3. Fallback: "Reativa"
  */
 function derivePageTitle(pathname: string): string {
-  // Match exato
   const exact = PAGE_TITLES[pathname];
   if (exact) return exact;
 
-  // Match por prefixo (sub-rotas como /clients/:id)
   for (const [path, title] of Object.entries(PAGE_TITLES)) {
     if (pathname.startsWith(path + '/')) return title;
   }
@@ -65,11 +65,13 @@ interface HeaderProps {
   isSidebarOpen: boolean;
   /** Toggle da sidebar — passado ao botão hamburger */
   onMenuToggle: () => void;
+  /** Ref do botão hamburger — para devolução de foco ao fechar a sidebar */
+  menuBtnRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 // ── COMPONENTE ─────────────────────────────────────────────────────────────
 
-export function Header({ isSidebarOpen, onMenuToggle }: HeaderProps) {
+export function Header({ isSidebarOpen, onMenuToggle, menuBtnRef }: HeaderProps) {
   const { user } = useAuth();
   const { pathname } = useLocation();
   const pageTitle = derivePageTitle(pathname);
@@ -79,9 +81,10 @@ export function Header({ isSidebarOpen, onMenuToggle }: HeaderProps) {
       {/*
         Botão hamburger — visível somente em mobile (display: none no desktop via CSS).
         aria-expanded informa o estado da sidebar para leitores de tela.
-        aria-controls seria ideal mas a sidebar não tem id fixo no MVP.
+        menuBtnRef permite devolução de foco ao fechar a sidebar.
       */}
       <button
+        ref={menuBtnRef}
         className="app-header__menu-btn"
         onClick={onMenuToggle}
         type="button"
@@ -92,13 +95,21 @@ export function Header({ isSidebarOpen, onMenuToggle }: HeaderProps) {
       </button>
 
       {/*
-        Título da página — <p> sem semântica de heading.
-        O <h1> real de cada página fica dentro do conteúdo (app-layout__main).
-        Isso evita dois h1 na mesma página, mantendo a hierarquia correta.
+        Título da página — visível SOMENTE em mobile (display: none no desktop via CSS).
+        Em desktop, o título fica no <h1> do conteúdo (.page-header__title).
+        Em mobile, o .page-header__title é ocultado (globals.css) e este
+        <p> exibe o nome da página ao lado do hambúrguer — sem duplicação.
       */}
       <p className="app-header__title">{pageTitle}</p>
 
-      {/* Nome do usuário autenticado */}
+      {/*
+        Spacer — empurra o nome do usuário para a direita.
+        Em desktop, o hamburger está oculto; o spacer ocupa o lado esquerdo.
+        Em mobile, hamburger + título ocupam a esquerda; o spacer preenche o meio.
+      */}
+      <div className="app-header__spacer" aria-hidden="true" />
+
+      {/* Nome do usuário autenticado — oculto em telas muito pequenas (≤375px) */}
       {user?.name && (
         <div className="app-header__user">
           <span className="app-header__user-name" title={user.name}>

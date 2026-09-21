@@ -4,15 +4,29 @@
   Posição: sticky no topo do .app-layout__body.
   Altura: var(--header-height) = 60px (token centralizado em variables.css).
   Visual: branco com borda inferior sutil — contrasta com o fundo --color-bg das páginas.
+
+  PADRÃO DE TÍTULO:
+    Desktop (>768px): .app-header__title = display: none
+                      → título fica no <h1> do conteúdo (.page-header__title)
+    Mobile (≤768px):  .app-header__title = display: block (ao lado do hambúrguer)
+                      → .page-header__title é ocultado em globals.css
+
+  ALINHAMENTO DA LINHA SEPARADORA:
+    O padding horizontal do header acompanha o padding do app-layout__main
+    em cada breakpoint — evita que o conteúdo da página pareça começar em
+    posição diferente da linha inferior do header.
+      Desktop:  padding: 0 var(--space-8)   = 0 32px  (= main: --space-8)
+      Notebook: padding: 0 var(--space-6)   = 0 24px  (= main: --space-6)
+      Mobile:   padding: 0 var(--space-4)   = 0 16px  (= main: --space-4)
 */
 
 /* ── CONTAINER ────────────────────────────────────────────────────────────── */
 .app-header {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   height: var(--header-height);
-  padding: 0 var(--space-8);
+  padding: 0 var(--space-8);          /* alinhado ao padding do main em desktop */
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   /* Sticky: permanece visível enquanto app-layout__main faz scroll */
@@ -54,23 +68,36 @@
   outline-offset: 2px;
 }
 
-/* ── TÍTULO DA PÁGINA ─────────────────────────────────────────────────────── */
+/* ── TÍTULO DA PÁGINA (mobile only) ──────────────────────────────────────── */
 /*
-  Elemento <p> — o heading semântico (<h1>) fica dentro do conteúdo de cada página.
-  Visualmente aparece como um título de seção, mas não é heading para leitores de tela,
-  evitando h1 duplicado (um no header, outro na página).
+  Oculto em desktop — o título fica no <h1> do conteúdo.
+  Visível em mobile ao lado do hambúrguer, sem duplicar o <h1>.
+  Usa <p> (não heading) para preservar a hierarquia semântica:
+  o <h1> real permanece no conteúdo de cada página.
 */
 .app-header__title {
-  flex: 1;
-  font-size: var(--text-lg);
+  display: none;          /* oculto em desktop */
+  font-size: var(--text-base);
   font-weight: var(--font-semibold);
   color: var(--color-text);
   line-height: var(--leading-tight);
-  /* Trunca em caso de título muito longo (não esperado, mas seguro) */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin: 0; /* reset de margin do <p> */
+  margin: 0;              /* reset de margin do <p> */
+  flex-shrink: 1;         /* pode encolher se o nome de usuário precisar de espaço */
+  min-width: 0;
+}
+
+/* ── SPACER ───────────────────────────────────────────────────────────────── */
+/*
+  Empurra o nome do usuário para a direita.
+  Em desktop: hamburger oculto, spacer preenche toda a largura à esquerda.
+  Em mobile: hamburger + título à esquerda, spacer no meio, usuário à direita.
+*/
+.app-header__spacer {
+  flex: 1;
+  min-width: var(--space-2);  /* garante pelo menos 8px de respiro */
 }
 
 /* ── ÁREA DO USUÁRIO ──────────────────────────────────────────────────────── */
@@ -82,13 +109,12 @@
 
 /*
   Nome do usuário autenticado — vindo do AuthContext (user.name).
-  Tamanho e cor discretos: presença sem competir com o título da página.
+  Tamanho e cor discretos: presença sem competir com o conteúdo da página.
 */
 .app-header__user-name {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: var(--color-text-secondary);
-  /* Trunca nomes longos */
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -96,14 +122,29 @@
 }
 
 /* ── RESPONSIVIDADE ───────────────────────────────────────────────────────── */
+
+/* Notebook — padding sincronizado com app-layout__main em ≤1024px */
+@media (max-width: 1024px) {
+  .app-header {
+    padding: 0 var(--space-6);        /* = main padding em ≤1024px */
+  }
+}
+
+/* Tablet / mobile */
 @media (max-width: 768px) {
   .app-header {
-    padding: 0 var(--space-4);
-    gap: var(--space-3);
+    padding: 0 var(--space-4);        /* = main padding em ≤768px */
+    gap: var(--space-2);
   }
 
+  /* Hamburger aparece */
   .app-header__menu-btn {
-    display: flex; /* aparece em mobile */
+    display: flex;
+  }
+
+  /* Título aparece no header — .page-header__title ocultado em globals.css */
+  .app-header__title {
+    display: block;
   }
 
   .app-header__user-name {
@@ -111,8 +152,11 @@
   }
 }
 
-/* Em telas muito pequenas, oculta o nome para não conflitar com o título */
-@media (max-width: 400px) {
+/*
+  Em telas muito estreitas, oculta o nome do header.
+  O nome está disponível dentro do menu mobile (sidebar) como fallback.
+*/
+@media (max-width: 375px) {
   .app-header__user-name {
     display: none;
   }

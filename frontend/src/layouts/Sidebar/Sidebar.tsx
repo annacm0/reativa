@@ -14,6 +14,9 @@
  *   ✓ Botão de fechar com aria-label descritivo
  *   ✓ Logout com texto visível ("Sair") — não depende apenas de ícone
  *   ✓ Todos os elementos interativos com :focus-visible configurado no CSS
+ *   ✓ closeBtnRef passado pelo AppLayout para mover foco ao abrir a sidebar
+ *   ✓ Nome do usuário exibido no rodapé mobile — disponível mesmo quando
+ *      ocultado do Header em telas muito estreitas (≤400px)
  */
 
 import { Link, NavLink } from 'react-router-dom';
@@ -25,6 +28,7 @@ import {
   RefreshCw,
   LogOut,
   X,
+  User,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import './Sidebar.css';
@@ -59,12 +63,14 @@ interface SidebarProps {
   isOpen: boolean;
   /** Callback para fechar a sidebar (botão X ou backdrop) */
   onClose: () => void;
+  /** Ref do botão fechar — AppLayout move foco para cá ao abrir a sidebar */
+  closeBtnRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 // ── COMPONENTE ─────────────────────────────────────────────────────────────
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const { logout } = useAuth();
+export function Sidebar({ isOpen, onClose, closeBtnRef }: SidebarProps) {
+  const { logout, user } = useAuth();
 
   return (
     <aside
@@ -104,6 +110,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* Botão fechar — visível apenas em mobile (display: none no desktop via CSS) */}
         <button
+          ref={closeBtnRef}
           className="sidebar__close"
           onClick={onClose}
           type="button"
@@ -143,13 +150,23 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* ── Logout ──────────────────────────────────────────────────────── */}
+      {/* ── Rodapé: usuário + logout ──────────────────────────────────────── */}
       {/*
         Separado da <nav> principal por semântica:
         logout é uma ação, não um destino de navegação.
-        O texto "Sair" está visível — não depende apenas do ícone.
+        O nome do usuário é exibido aqui na sidebar — garante que o usuário
+        sempre tenha acesso à sua identificação, mesmo quando o nome é ocultado
+        do Header em telas muito estreitas (≤400px).
       */}
       <div className="sidebar__footer">
+        {/* Nome do usuário — visível apenas em mobile (oculto no desktop via CSS) */}
+        {user?.name && (
+          <div className="sidebar__user" aria-label={`Usuário: ${user.name}`}>
+            <User size={14} aria-hidden="true" className="sidebar__user-icon" />
+            <span className="sidebar__user-name">{user.name}</span>
+          </div>
+        )}
+
         <button
           className="sidebar__logout"
           onClick={logout}
