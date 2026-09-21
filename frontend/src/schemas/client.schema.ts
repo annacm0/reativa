@@ -28,10 +28,10 @@ export const createClientSchema = z.object({
 
   phone: z
     .string()
-    .min(1, 'Informe o telefone')
+    .min(1, 'Informe o telefone com DDD')
     .refine(
       (val) => val.replace(/\D/g, '').length >= 10,
-      'Informe DDD + número (mínimo 10 dígitos)'
+      'Telefone incompleto. Ex: (11) 99999-9999'
     ),
 
   // Aceita email válido OU string vazia (campo não preenchido)

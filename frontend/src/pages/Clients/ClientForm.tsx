@@ -69,9 +69,10 @@ export function ClientForm({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<CreateClientFormData>({
     resolver: zodResolver(createClientSchema),
+    mode: 'onChange',
     defaultValues: {
       name: defaultValues?.name ?? '',
       phone: defaultValues?.phone ?? '',
@@ -183,7 +184,7 @@ export function ClientForm({
           type="submit"
           variant="primary"
           isLoading={isSubmitting}
-          disabled={showDirtyGuard && !isDirty}
+          disabled={!isValid || isSubmitting || (showDirtyGuard && !isDirty)}
         >
           {submitLabel}
         </Button>

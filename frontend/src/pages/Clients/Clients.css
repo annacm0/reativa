@@ -3,12 +3,16 @@
 
   Inclui:
     .clients-page     → container da página
-    .clients-header   → título + botão novo
+    .clients-header   → (alias; layout via .page-header em globals.css)
     .clients-search   → campo de busca
     .clients-list     → lista de clientes
     .client-item      → item individual
     .client-drawer    → painel lateral de criação
-    .client-drawer-backdrop → overlay do drawer
+
+  Notas de arquitetura:
+    - .page-header e .page-header__title são definidos em globals.css
+    - @keyframes drawer-slide-in e backdrop-fade-in estão em globals.css
+    - Drawers seguem comportamento progressivo: desktop → tablet → mobile
 */
 
 /* ── PÁGINA ───────────────────────────────────────────────────────────────── */
@@ -17,21 +21,19 @@
   flex-direction: column;
   gap: var(--space-6);
   max-width: var(--content-max-width);
+  margin: 0 auto; /* centraliza em telas maiores que content-max-width */
 }
 
 /* ── CABEÇALHO ────────────────────────────────────────────────────────────── */
+/*
+  Mantido como alias para retrocompatibilidade.
+  O comportamento responsivo é gerenciado por .page-header em globals.css.
+*/
 .clients-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-}
-
-.clients-header__title {
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--color-text);
-  line-height: var(--leading-tight);
 }
 
 /* ── BUSCA ────────────────────────────────────────────────────────────────── */
@@ -52,7 +54,7 @@
 .clients-search__input {
   width: 100%;
   height: var(--input-height);
-  padding: 0 var(--space-3) 0 var(--space-9);
+  padding: 0 var(--space-3) 0 var(--space-8);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--color-text);
@@ -138,7 +140,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  /* Sem max-width fixo — o min-width:0 do pai + flex controla o truncamento */
+  max-width: clamp(120px, 30%, 240px);
 }
 
 /* Separador ponto entre telefone e email */
@@ -167,6 +170,12 @@
   animation: backdrop-fade-in var(--transition-normal);
 }
 
+/*
+  Largura do drawer — comportamento progressivo:
+  Desktop (>768px):  480px máx → drawer lateral confortável
+  Tablet (481-768px): min(90vw, 480px) → margem lateral preserva contexto
+  Mobile (≤480px):   100vw → ocupa tela inteira
+*/
 .client-drawer {
   position: fixed;
   top: 0;
@@ -181,11 +190,6 @@
   display: flex;
   flex-direction: column;
   animation: drawer-slide-in var(--transition-slow);
-}
-
-@keyframes drawer-slide-in {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
 }
 
 .client-drawer__header {
@@ -237,20 +241,20 @@
 }
 
 /* ── RESPONSIVIDADE ───────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .clients-header__title {
-    font-size: var(--text-xl);
-  }
 
+/* Tablet: drawer com margem lateral, busca expande */
+@media (max-width: 768px) {
   .clients-search {
     max-width: 100%;
   }
 
+  /* Tablet: preserva parte do contexto ao fundo */
   .client-drawer {
-    max-width: 100%;
+    max-width: min(90vw, 480px);
   }
 }
 
+/* Mobile: empilhamento de itens, drawer full width */
 @media (max-width: 480px) {
   .client-item {
     flex-wrap: wrap;
@@ -267,12 +271,13 @@
     justify-content: flex-end;
   }
 
-  .client-item__email {
-    max-width: 140px;
+  /* Drawer ocupa toda a tela em mobile */
+  .client-drawer {
+    max-width: 100%;
   }
 
   .client-drawer__header {
-    padding: var(--space-4) var(--space-4);
+    padding: var(--space-4);
   }
 
   .client-drawer__body {

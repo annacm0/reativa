@@ -103,11 +103,12 @@ export default function Clients() {
   return (
     <div className="clients-page">
       {/* Título + botão novo */}
-      <div className="clients-header">
-        <h1 className="clients-header__title">Clientes</h1>
+      <div className="clients-header page-header">
+        <h1 className="clients-header__title page-header__title">Clientes</h1>
         <Button
           variant="primary"
           size="md"
+          className="page-header__btn"
           onClick={handleOpenDrawer}
           aria-label="Novo cliente"
         >

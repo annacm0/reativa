@@ -151,3 +151,86 @@ body {
   padding: var(--space-8);
   text-align: center;
 }
+
+/* ── PADRÃO DE CABEÇALHO DE PÁGINA ─────────────────────────────────────────
+   Reutilizável por todas as páginas autenticadas (Clientes, Serviços,
+   Atendimentos, Dashboard, Reativação, etc.).
+
+   Uso:
+     <div class="page-header">
+       <h1 class="page-header__title">Título</h1>
+       <button class="btn btn--primary page-header__btn">Ação</button>
+     </div>
+
+   Em mobile (≤480px), empilha título e botão verticalmente.
+   O botão ocupa largura total — área de toque confortável.
+   ──────────────────────────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.page-header__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+  line-height: var(--leading-tight);
+}
+
+@media (max-width: 768px) {
+  .page-header__title {
+    /*
+      Em mobile, o título da página é exibido no Header (app-header__title),
+      ao lado do hambúrguer. Ocultar aqui evita duplicação visual.
+      Em desktop (>768px), este elemento é o único título visível.
+    */
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .page-header__btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── ANIMAÇÕES COMPARTILHADAS ───────────────────────────────────────────────
+   Definidas aqui uma única vez — usadas por drawers, backdrops e sidebar.
+   Cada arquivo que precisar apenas referencia o nome da animação.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Drawer deslizando da direita para a esquerda */
+@keyframes drawer-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Backdrop aparecendo com fade */
+@keyframes backdrop-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── PREFERÊNCIA DE MOVIMENTO REDUZIDO ──────────────────────────────────────
+   Respeita a preferência do usuário por menos animação (acessibilidade).
+   Desativa transform e animações de slide; mantém transições de opacidade.
+   ──────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
